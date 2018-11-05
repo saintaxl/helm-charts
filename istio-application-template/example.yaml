@@ -1,0 +1,77 @@
+global:
+  # Name of your application
+  name: helloworld
+
+  # Host of your application. E.g. "helloworld.hbc"
+  host: helloworld.eks
+
+  # Port at which your application will be visible (usually 80)
+  port: 80
+
+  # Port at which your container runs
+  targetPort: 8080
+
+  # Service versions deployed
+  versions:
+    v0.0.1:
+      trafficPercentage: 80 
+      headers: 
+        cookie: 
+          regex: "^.*environment=production.*$"
+      image:
+        repository: istio/examples-helloworld-v1
+        tag: "latest"
+    v0.0.2:
+      trafficPercentage: 20
+      headers: 
+        cookie: 
+          regex: "^.*environment=canary.*$"
+      image:
+        repository: examples-helloworld-v2
+        tag: "latest"
+    v0.0.3:
+      trafficPercentage: 0
+      headers: 
+        cookie: 
+          regex: "^.*environment=staging.*$"
+      image:
+        repository: istio/examples-bookinfo-productpage-v1
+        tag: "latest"
+
+  # External incoming traffic settings
+  gateway: 
+    enabled: true # Enables traffic from outside the cluster
+    ingressGatewayName: ingressgateway # Uses this ingressgateway
+
+  # Hosts that your service will access outside the cluster
+  externalServices:
+    saks:
+      host: saks.com
+      port: 
+        number: 80
+        name: http
+        protocol: HTTP
+    hbc:
+      host: hbc.com
+      port: 
+        number: 80
+        name: http
+        protocol: GRPC
+    bay:
+      host: thebay.com
+      port: 
+        number: 443
+        name: https
+        protocol: HTTPS
+
+  # Autoscaler settings
+  autoscale:
+    minReplicas: 1
+    maxReplicas: 5
+    cpuUtilizationPercentage: 80
+
+  ###########################################
+  # Cluster variables
+  ###########################################
+  dnsDomain: 
+  tracingServiceHost:
