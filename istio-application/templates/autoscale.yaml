@@ -1,0 +1,19 @@
+{{- range $v, $spec := .Values.global.versions }}
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+    name: {{ $.Values.global.name }}-{{ $v }}-autoscaler
+spec:
+    maxReplicas: {{ $.Values.global.autoscale.maxReplicas }}
+    minReplicas: {{ $.Values.global.autoscale.minReplicas }}
+    scaleTargetRef:
+      apiVersion: apps/v1beta1
+      kind: Deployment
+      name: {{ $.Values.global.name }}-{{ $v }}
+    metrics: 
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ $.Values.global.autoscale.cpuUtilizationPercentage }}
+{{ end }}

@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.global.name }}
+  labels:
+    app: {{ .Values.global.name }}
+spec:
+  ports:
+  - port: {{ .Values.global.port }}
+    targetPort: {{ .Values.global.targetPort }}
+    name: http
+  selector:
+    app: {{ .Values.global.name }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ .Values.global.name }}
+spec:
+  host: {{ .Values.global.name }}
+  subsets:
+  {{- range $key, $spec := .Values.global.versions }}
+  - name: {{ $key }}
+    labels:
+      version: {{ $key }}
+  {{- end}}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .Values.global.name }}
+spec:
+  hosts:
+    - "{{ .Values.global.host }}.{{.Values.global.dnsDomain}}"
+  gateways:
+  {{- if .Values.global.gateway.enabled }}
+    - {{ .Values.global.name }}-gateway
+  {{- end }}
+    - mesh
+  http:
+  {{- range $v, $spec := .Values.global.versions }}
+  - match:
+    - headers:
+        {{- range $header, $headerspec := $spec.headers }}
+        {{ $header }}: 
+        {{- range $matcher, $val := $headerspec }}
+          {{ $matcher }}: {{ $val }}
+        {{- end }}
+        {{- end }}
+    route:
+    - destination:
+        host: {{ $.Values.global.host }}
+        subset: {{ $v }}
+        port: 
+          number: {{ $.Values.global.port }}
+  {{- end }}
+  - route:
+    {{- range $v, $spec := .Values.global.versions }}
+    - destination:
+        host: {{ $.Values.global.host }}
+        subset: {{ $v }}
+        port:
+          number: {{ $.Values.global.port }}
+      weight: {{ $spec.traffic_percentage }}
+    {{- end }}
+---
+{{- if .Values.global.gateway.enabled }}
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ .Values.global.name }}-gateway
+spec:
+  selector:
+    istio: {{ .Values.global.gateway.ingressGatewayName }}
+  servers:
+  - port:
+      number: {{ .Values.global.port }}
+      name: http
+      protocol: HTTP
+    hosts:
+    - "{{.Values.global.host}}.{{.Values.global.dnsDomain}}"
+{{- end }}

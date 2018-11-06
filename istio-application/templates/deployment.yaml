@@ -1,0 +1,44 @@
+{{- range $v, $spec := .Values.global.versions }}
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ $.Values.global.name }}-{{ $v }}
+  labels:
+    app: {{ $.Values.global.name }}
+    version: {{ $v }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ $.Values.global.name }}
+      version: {{ $v }}
+  template:
+    metadata:
+      labels:
+        app: {{ $.Values.global.name }}
+        version: {{ $v }}
+    spec:
+      containers:
+        - name: {{ $.Values.global.name }}
+          image: {{ $spec.image.repository }}:{{ $spec.image.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: applicationport
+              containerPort: {{ $.Values.global.targetPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+          env:
+            - name: JAEGER_AGENT_HOST
+              value: "{{ $.Values.global.tracingServiceHost }}"
+            - name: JAEGER_SAMPLER_TYPE
+              value: "const"
+            - name: JAEGER_SAMPLER_PARAM
+              value: "1"        
+{{- end }}

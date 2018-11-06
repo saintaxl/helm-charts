@@ -1,3 +1,10 @@
 apiVersion: v1
-entries: {}
-generated: 2018-11-06T10:34:23.899501Z
+entries:
+  istio-application:
+  - created: 2018-11-06T11:16:22.370301Z
+    digest: ea94d7ee8bfe1d24e553e9e6d24959cceacc79325530df47d5ea7c1ce892a5b4
+    name: istio-application
+    urls:
+    - istio-application-0.1.0.tgz
+    version: 0.1.0
+generated: 2018-11-06T11:16:22.367593Z

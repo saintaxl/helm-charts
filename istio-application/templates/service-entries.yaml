@@ -1,0 +1,39 @@
+
+{{- range $service, $spec := .Values.global.externalServices}}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: {{$.Values.global.name}}.{{ $service }}-ext
+spec:
+  hosts:
+  - {{ $spec.host }}
+  ports:
+    - port: 
+        number: {{ $spec.port.number }}
+        name: {{ $spec.port.name }}
+        protocol: {{ $spec.port.protocol }}
+  resolution: DNS
+  location: MESH_EXTERNAL
+{{- if eq $spec.port.protocol "HTTPS" }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{$.Values.global.name}}.{{ $service }}-ext
+spec:
+  hosts:
+  - {{ $spec.host }}
+  tls:
+  - match:
+    - port: {{ $spec.port.number }}
+      sni_hosts:
+      - {{ $spec.host }}
+    route:
+    - destination:
+        host: {{ $spec.host }}
+        port:
+          number: {{ $spec.port.number }}
+      weight: 100
+{{- end }}
+{{- end }}
