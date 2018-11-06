@@ -1,4 +1,5 @@
 {{- range $v, $spec := .Values.global.versions }}
+---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
@@ -15,5 +16,4 @@ spec:
       resource:
         name: cpu
         targetAverageUtilization: {{ $.Values.global.autoscale.cpuUtilizationPercentage }}
----
 {{ end }}

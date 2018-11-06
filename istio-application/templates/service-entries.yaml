@@ -1,5 +1,6 @@
 
 {{- range $service, $spec := .Values.global.externalServices}}
+---
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
@@ -14,7 +15,6 @@ spec:
         protocol: {{ $spec.port.protocol }}
   resolution: DNS
   location: MESH_EXTERNAL
----
 {{- if eq $spec.port.protocol "HTTPS" }}
 ---
 apiVersion: networking.istio.io/v1alpha3
@@ -35,6 +35,5 @@ spec:
         port:
           number: {{ $spec.port.number }}
       weight: 100
----
 {{- end }}
 {{- end }}

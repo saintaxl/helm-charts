@@ -1,4 +1,5 @@
 {{- range $v, $spec := .Values.global.versions }}
+---
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -40,5 +41,4 @@ spec:
               value: "const"
             - name: JAEGER_SAMPLER_PARAM
               value: "1"        
----
 {{- end }}
