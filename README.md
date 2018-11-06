@@ -1,7 +1,7 @@
 # Helm charts
 
 This repository contains **public** helm charts and will act as a repository server exposed on https://saksdirect.github.io/helm-charts
-We host the raw charts in `master` and the packaged versions in `gh-pages`. 
+We host the raw charts in the `master` root and the packaged charts and index in the `docs` folder.
 
 ## Adding a chart
 
