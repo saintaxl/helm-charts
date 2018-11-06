@@ -10,7 +10,7 @@ name: your-application-name
 requirements.yaml
 ```yaml
 dependencies:
-- name: istio-application-template
+- name: istio-application
   version: 0.1.0
   repository: https://saksdirect.github.io/helm-charts
 ```
