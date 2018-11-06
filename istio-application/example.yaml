@@ -27,7 +27,7 @@ global:
         cookie: 
           regex: "^.*environment=canary.*$"
       image:
-        repository: examples-helloworld-v2
+        repository: istio/examples-helloworld-v2
         tag: "latest"
     v0.0.3:
       trafficPercentage: 0
@@ -75,4 +75,3 @@ global:
   ###########################################
   dnsDomain: 
   tracingServiceHost:
-    
