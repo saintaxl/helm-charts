@@ -57,7 +57,7 @@ spec:
             - --cert=/etc/kiam/tls/agent.pem
             - --key=/etc/kiam/tls/agent-key.pem
             - --ca=/etc/kiam/tls/ca.pem
-            - --server-address={{ .Values.agent.serverAddress }}
+            - --server-address=kiam.server
             - --prometheus-listen-addr=0.0.0.0:9620
             - --prometheus-sync-interval=5s
           env:
