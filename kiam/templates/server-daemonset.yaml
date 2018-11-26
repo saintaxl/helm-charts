@@ -1,0 +1,108 @@
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: kiam-server
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    metadata:
+      {{- if .Values.server.podAnnotations }}
+      annotations:
+{{ toYaml .Values.server.podAnnotations | indent 8 }}
+      {{- end }}
+      labels:
+        app: kiam
+        role: server
+      {{- if .Values.server.podLabels }}
+{{ toYaml .Values.server.podLabels | indent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: kiam-server
+    {{- if .Values.server.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.server.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.server.tolerations }}
+      tolerations:
+{{ toYaml .Values.server.tolerations | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: ssl-certs
+          hostPath:
+            path: /etc/pki/ca-trust/extracted/pem/
+        - name: tls
+          secret:
+            secretName: kiam-server-tls
+      containers:
+        - name: kiam
+          image: quay.io/uswitch/kiam:{{ .Values.server.image.tag }}
+          imagePullPolicy: Always
+          command:
+            - /server
+          args:
+            - --json-log
+            - --bind=0.0.0.0:443
+            - --cert=/etc/kiam/tls/server.pem
+            - --key=/etc/kiam/tls/server-key.pem
+            - --ca=/etc/kiam/tls/ca.pem
+            {{- if .Values.server.roleBaseArn }}
+            - --role-base-arn={{ .Values.server.roleBaseArn }}
+            {{- else }}
+            - --role-base-arn-autodetect
+            {{- end }}
+            {{- if .Values.server.assumeRoleArn }}
+            - --assume-role-arn={{ .Values.server.assumeRoleArn }}
+            {{- end }}
+            - --session-duration={{ .Values.server.sessionDuration }}
+            - --sync={{ .Values.server.cache.syncInterval }}
+            - --prometheus-listen-addr=0.0.0.0:9620
+            - --prometheus-sync-interval=5s
+        {{- if .Values.server.extraEnv }}
+          env:
+          {{- range $name, $value := .Values.server.extraEnv }}
+            - name: {{ $name }}
+              value: {{ quote $value }}
+          {{- end }}
+        {{- end }}
+          volumeMounts:
+            - mountPath: /etc/ssl/certs
+              name: ssl-certs
+            - mountPath: /etc/kiam/tls
+              name: tls
+        {{- if .Values.server.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+              - /health
+              - --cert=/etc/kiam/tls/server.pem
+              - --key=/etc/kiam/tls/server-key.pem
+              - --ca=/etc/kiam/tls/ca.pem
+              - --server-address={{ .Values.server.livenessProbe.address }}:443
+              - --server-address-refresh=2s
+              - --timeout=5s
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 10
+        {{- end }}
+        {{- if .Values.server.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+              - /health
+              - --cert=/etc/kiam/tls/server.pem
+              - --key=/etc/kiam/tls/server-key.pem
+              - --ca=/etc/kiam/tls/ca.pem
+              - --server-address={{ .Values.server.readinessProbe.address }}:443
+              - --server-address-refresh=2s
+              - --timeout=5s
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 10
+        {{- end }}
+        {{- if .Values.server.resources }}
+          resources:
+{{ toYaml .Values.server.resources | indent 12 }}
+        {{- end }}
+  updateStrategy:
+    type: {{ .Values.server.updateStrategy }}
