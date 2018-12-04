@@ -1,16 +1,37 @@
 apiVersion: v1
 entries:
   istio-application:
-  - created: 2018-12-04T16:51:05.732219Z
+  - created: 2018-12-04T17:02:59.546512Z
     digest: 45c18b61301721c4b4cd1074e691832d88ad7a334c7536090d6a5cd8b4af1314
     name: istio-application
     urls:
     - istio-application-0.1.1.tgz
     version: 0.1.1
-  - created: 2018-12-04T16:51:05.731749Z
+  - created: 2018-12-04T17:02:59.546212Z
     digest: ea94d7ee8bfe1d24e553e9e6d24959cceacc79325530df47d5ea7c1ce892a5b4
     name: istio-application
     urls:
     - istio-application-0.1.0.tgz
     version: 0.1.0
-generated: 2018-12-04T16:51:05.729997Z
+  kiam:
+  - appVersion: "2.7"
+    created: 2018-12-04T17:02:59.547329Z
+    description: Integrate AWS IAM with Kubernetes
+    digest: 2209944f573942c6df05514108f3fe2d895411e33c1183852bab4c1cc1033093
+    engine: gotpl
+    home: https://github.com/uswitch/kiam
+    keywords:
+    - kiam
+    - aws
+    - iam
+    - security
+    maintainers:
+    - email: Kit_Ewbank@hotmail.com
+      name: ewbankkit
+    name: kiam
+    sources:
+    - https://github.com/uswitch/kiam
+    urls:
+    - kiam-0.0.1.tgz
+    version: 0.0.1
+generated: 2018-12-04T17:02:59.545061Z
