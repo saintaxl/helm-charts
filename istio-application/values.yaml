@@ -38,6 +38,10 @@ global:
     #     repository: istio/examples-bookinfo-productpage-v1
     #     tag: "latest"
 
+  # Virtual Service configuration. Enabled by default. Set `enabled=false` for a custom virtualService configuration
+  virtualService:
+    enabled: true
+
   # External incoming traffic settings
   gateway: 
     enabled: true # Enables traffic from outside the cluster
