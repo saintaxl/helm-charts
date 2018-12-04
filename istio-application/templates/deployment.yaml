@@ -1,6 +1,6 @@
 {{- range $v, $spec := .Values.global.versions }}
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ $.Values.global.name }}-{{ $v }}
@@ -17,24 +17,35 @@ spec:
       labels:
         app: {{ $.Values.global.name }}
         version: {{ $v }}
+      {{- if $spec.podAnnotations }}
+      annotations:
+{{ toYaml $spec.podAnnotations | indent 8 }}
+      {{- end }}
     spec:
       containers:
         - name: {{ $.Values.global.name }}
           image: {{ $spec.image.repository }}:{{ $spec.image.tag }}
-          imagePullPolicy: IfNotPresent
+          {{- if $spec.args }}
+          args:
+{{ toYaml $spec.args | indent 12 }}
+          {{- end }}
+          imagePullPolicy: {{ $spec.imagePullPolicy | default "IfNotPresent" }}
           ports:
             - name: applicationport
               containerPort: {{ $.Values.global.targetPort }}
               protocol: TCP
+          {{- if $spec.livenessProbe }}
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: http
+{{ toYaml $spec.livenessProbe | indent 12 }}
+          {{- end }}
+          {{- if $spec.readinessProbe }}
           readinessProbe:
-            httpGet:
-              path: /healthcheck
-              port: http
+{{ toYaml $spec.readinessProbe | indent 12 }}
+          {{- end }}
           env:
+          {{- if $spec.env }}
+{{ toYaml $spec.env | indent 12 -}}
+          {{- end }}
             - name: JAEGER_AGENT_HOST
               value: "{{ $.Values.global.tracingServiceHost }}"
             - name: JAEGER_SAMPLER_TYPE
