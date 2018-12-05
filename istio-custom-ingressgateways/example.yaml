@@ -28,6 +28,7 @@ gateways:
     namespace: frontend-apps
     serviceAnnotations:
       external-dns.alpha.kubernetes.io/hostname: graphql-private.example.com
+      service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
     labels:
       app: graphql
     ports: 
