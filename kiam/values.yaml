@@ -1,0 +1,75 @@
+server:
+
+  podAnnotations: {}
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  image:
+    tag: "v2.7"
+
+  ## Base64-encoded PEM values for server's CA certificate(s), certificate and private key
+  tlsFiles:
+    ca.pem :
+    server.pem :
+    server-key.pem :
+
+  assumeRoleArn: null
+  roleBaseArn: null
+
+  cache:
+    syncInterval: 1m
+
+  sessionDuration: 15m
+
+  extraEnv: {}
+
+  livenessProbe:
+    address: "127.0.0.1"
+    enabled: true
+
+  readinessProbe:
+    enabled: true
+    address: "127.0.0.1"
+
+  resources: 
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+
+  updateStrategy: RollingUpdate
+
+
+agent:
+
+  podAnnotations: {}
+
+  tolerations: {}
+
+  image:
+    tag: "v2.7"
+
+  ## Base64-encoded PEM values for agent's CA certificate(s), certificate and private key
+  tlsFiles:
+    ca.pem :
+    agent.pem :
+    agent-key.pem :
+
+  extraEnv: {}
+
+  livenessProbe:
+    enabled: true
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+  updateStrategy: RollingUpdate

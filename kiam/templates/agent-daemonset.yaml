@@ -1,0 +1,92 @@
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: kiam-agent
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    metadata:
+      {{- if .Values.agent.podAnnotations }}
+      annotations:
+{{ toYaml .Values.agent.podAnnotations | indent 8 }}
+      {{- end }}
+      labels:
+        app: kiam
+        role: agent
+      {{- if .Values.agent.podLabels }}
+{{ toYaml .Values.agent.podLabels | indent 8 }}
+      {{- end }}
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      serviceAccountName: kiam-agent
+    {{- if .Values.agent.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.agent.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.agent.tolerations }}
+      tolerations:
+{{ toYaml .Values.agent.tolerations | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: ssl-certs
+          hostPath:
+            path: /etc/pki/ca-trust/extracted/pem/
+        - name: tls
+          secret:
+            secretName: kiam-agent-tls
+        - name: xtables
+          hostPath:
+            path: /run/xtables.lock
+      containers:
+        - name: kiam
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          image: quay.io/uswitch/kiam:{{ .Values.agent.image.tag }}
+          imagePullPolicy: Always
+          command:
+            - /agent
+          args:
+            - --iptables
+            - --host-interface=eni+
+            - --host=$(HOST_IP)
+            - --json-log
+            - --port=8181
+            - --cert=/etc/kiam/tls/agent.pem
+            - --key=/etc/kiam/tls/agent-key.pem
+            - --ca=/etc/kiam/tls/ca.pem
+            - --server-address=kiam-server:443
+            - --prometheus-listen-addr=0.0.0.0:9620
+            - --prometheus-sync-interval=5s
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          {{- range $name, $value := .Values.agent.extraEnv }}
+            - name: {{ $name }}
+              value: {{ quote $value }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /etc/ssl/certs
+              name: ssl-certs
+            - mountPath: /etc/kiam/tls
+              name: tls
+            - mountPath: /var/run/xtables.lock
+              name: xtables
+        {{- if .Values.agent.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8181
+            initialDelaySeconds: 3
+            periodSeconds: 3
+        {{- end }}
+        {{- if .Values.agent.resources }}
+          resources:
+{{ toYaml .Values.agent.resources | indent 12 }}
+        {{- end }}
+  updateStrategy:
+    type: {{ .Values.agent.updateStrategy }}
