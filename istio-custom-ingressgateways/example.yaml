@@ -44,7 +44,8 @@ gateways:
   - name: graphql-nlb
     namespace: frontend-apps
     serviceAnnotations:
-      external-dns.alpha.kubernetes.io/hostname: graphql-private.example.com
+      external-dns.alpha.kubernetes.io/hostname: graphql-nlb.example.com
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
     labels:
       app: graphql
     ports: 
