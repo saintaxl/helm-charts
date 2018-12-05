@@ -1,0 +1,15 @@
+istioNamespace: istio-system
+tracingAddress: jaeger-collector.observe
+
+gateways:
+  - name: # Name of the ingress gateway
+    namespace: # Namespace of the ingress gateway
+    serviceAnnotations: {} # Custom annotations for the gateway
+    labels: {}
+    ports: {}
+    replicaCount: 
+    autoscale:
+      min: 1 
+      max: 5
+      cpu:
+          targetAverageUtilization: 80

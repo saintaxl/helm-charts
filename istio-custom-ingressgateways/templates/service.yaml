@@ -1,27 +1,29 @@
+{{- range $spec := .Values.gateways }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.name }}
-  namespace: {{ .Values.namespace }}
+  name: {{ $spec.name }}
+  namespace: {{ $spec.namespace }}
   annotations:
-    {{- range $key, $val := .Values.serviceAnnotations }}
+    {{- range $key, $val := $spec.serviceAnnotations }}
     {{ $key }}: {{ $val }}
     {{- end }}
   labels:
-    {{- range $key, $val := .Values.labels }}
+    {{- range $key, $val := $spec.labels }}
     {{ $key }}: {{ $val }}
     {{- end }}
 spec:
   type: LoadBalancer
   selector:
-    {{- range $key, $val := .Values.labels }}
+    {{- range $key, $val := $spec.labels }}
     {{ $key }}: {{ $val }}
     {{- end }}
   ports:
-    {{- range $key, $val := .Values.ports }}
+    {{- range $key, $val := $spec.ports }}
     -
       {{- range $pkey, $pval := $val }}
       {{ $pkey}}: {{ $pval }}
       {{- end }}
     {{- end }}
 ---
+{{- end }}

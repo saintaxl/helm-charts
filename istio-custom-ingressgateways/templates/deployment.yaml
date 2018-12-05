@@ -1,31 +1,32 @@
+{{- range $spec := .Values.gateways }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ .Values.name }}
-  namespace: {{ .Values.namespace }}
+  name: {{ $spec.name }}
+  namespace: {{ $spec.namespace }}
   labels:
-    {{- range $key, $val := .Values.labels }}
+    {{- range $key, $val := $spec.labels }}
     {{ $key }}: {{ $val }}
     {{- end }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ $spec.replicaCount }}
   template:
     metadata:
       labels:
-        {{- range $key, $val := .Values.labels }}
+        {{- range $key, $val := $spec.labels }}
         {{ $key }}: {{ $val }}
         {{- end }}
       annotations:
         sidecar.istio.io/inject: "false"
         scheduler.alpha.kubernetes.io/critical-pod: ""
     spec:
-      serviceAccountName: {{ .Values.name }}-service-account
+      serviceAccountName: {{ $spec.name }}-service-account
       containers:
         - name: istio-proxy
           image: "gcr.io/istio-release/proxyv2:release-1.0-latest-daily"
           imagePullPolicy: IfNotPresent
           ports:
-            {{- range $key, $val := .Values.ports }}
+            {{- range $key, $val := $spec.ports }}
             - containerPort: {{ $val.port }}
             {{- end }}
           args:
@@ -42,7 +43,7 @@ spec:
           - --connectTimeout
           - '10s' #connectTimeout
           - --serviceCluster
-          - {{ .Values.name }}
+          - {{ $spec.name }}
           - --zipkinAddress
           - .Values.tracingAddress:9411
           - --proxyAdminPort
@@ -51,13 +52,13 @@ spec:
           - NONE
           - --discoveryAddress
           {{- if $.Values.istioNamespace }}
-          - istio-pilot.{{ $.Values.global.istioNamespace }}:8080
+          - istio-pilot.{{ $.Values.istioNamespace }}:8080
           {{- else }}
           - istio-pilot:8080
           {{- end }}
           resources:
-{{- if .Values.resources }}
-{{ toYaml .Values.resources | indent 12 }}
+{{- if $spec.resources }}
+{{ toYaml $spec.resources | indent 12 }}
 {{- else }}
             defaultResources:
               requests:
@@ -88,3 +89,4 @@ spec:
             mountPath: /etc/certs
             readOnly: true
 ---
+{{- end }}
