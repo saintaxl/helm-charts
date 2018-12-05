@@ -1,0 +1,11 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    app: istio-gateway-{{.Values.name}}
+  name: {{.Values.name}}-{{ $.Values.Namespace }}
+rules:
+- apiGroups: ["extensions"]
+  resources: ["thirdpartyresources", "virtualservices", "destinationrules", "gateways"]
+  verbs: ["get", "watch", "list", "update"]
+---
