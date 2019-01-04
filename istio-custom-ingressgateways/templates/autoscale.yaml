@@ -3,7 +3,7 @@ apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
     name: {{ $spec.name }}
-    namespace: {{ $spec.namespace }}
+    namespace: {{ $.Release.Namespace }}
 spec:
     maxReplicas: 5
     minReplicas: 2

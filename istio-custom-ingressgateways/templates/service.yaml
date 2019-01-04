@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ $spec.name }}
-  namespace: {{ $spec.namespace }}
+  namespace: {{ $.Release.Namespace }}
   annotations:
     external-dns.alpha.kubernetes.io/hostname: {{ $spec.hostPrefix }}.{{ $.Values.dnsDomain }}
     {{- range $key, $val := $spec.serviceAnnotations }}

@@ -3,7 +3,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: {{ $spec.name }}
-  namespace: {{ $spec.namespace }}
+  namespace: {{ $.Release.Namespace }}
   labels:
     {{- range $key, $val := $spec.labels }}
     {{ $key }}: {{ $val }}

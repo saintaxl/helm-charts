@@ -1,10 +1,9 @@
 global:
   istioNamespace: istio-system
-  tracingAddress: jaeger-collector.observe
+  tracingServiceHost: jaeger-agent.observe
 
   customGateways:
     - name: graphql-public-ingress
-      namespace: frontend-apps
       serviceAnnotations:
         external-dns.alpha.kubernetes.io/hostname: graphql.example.com
         service.beta.kubernetes.io/aws-load-balancer-ssl-cert: your-arn
@@ -26,7 +25,6 @@ global:
         cpu:
           targetAverageUtilization: 80
     - name: graphql-private-ingress
-      namespace: frontend-apps
       serviceAnnotations:
         external-dns.alpha.kubernetes.io/hostname: graphql-private.example.com
         service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
@@ -44,7 +42,6 @@ global:
         cpu:
           targetAverageUtilization: 80
     - name: graphql-nlb
-      namespace: frontend-apps
       serviceAnnotations:
         external-dns.alpha.kubernetes.io/hostname: graphql-nlb.example.com
         service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
