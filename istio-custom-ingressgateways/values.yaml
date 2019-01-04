@@ -1,7 +1,7 @@
 global:
   istioNamespace: istio-system
   dnsDomain: 
-  tracingAddress: 
+  tracingServiceHost: 
 
   customGateways: 
     # - name: # Name of the ingress gateway

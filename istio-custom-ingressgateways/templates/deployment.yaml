@@ -45,7 +45,7 @@ spec:
           - --serviceCluster
           - {{ $spec.name }}
           - --zipkinAddress
-          - {{$.Values.global.tracingAddress }}:9411
+          - {{$.Values.global.tracingServiceHost }}:9411
           - --proxyAdminPort
           - "15000"
           - --controlPlaneAuthPolicy
