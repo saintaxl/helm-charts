@@ -1,4 +1,4 @@
-{{- range $spec := .Values.gateways }}
+{{- range $spec := .Values.global.customGateways }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -45,13 +45,13 @@ spec:
           - --serviceCluster
           - {{ $spec.name }}
           - --zipkinAddress
-          - .Values.tracingAddress:9411
+          - {{$.Values.global.tracingAddress }}:9411
           - --proxyAdminPort
           - "15000"
           - --controlPlaneAuthPolicy
           - NONE
           - --discoveryAddress
-          {{- if $.Values.istioNamespace }}
+          {{- if $.Values.global.istioNamespace }}
           - istio-pilot.{{ $.Values.istioNamespace }}:8080
           {{- else }}
           - istio-pilot:8080
@@ -60,7 +60,6 @@ spec:
 {{- if $spec.resources }}
 {{ toYaml $spec.resources | indent 12 }}
 {{- else }}
-            defaultResources:
               requests:
                 cpu: 10m
 {{- end }}
@@ -84,9 +83,5 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          volumeMounts:
-          - name: istio-certs
-            mountPath: /etc/certs
-            readOnly: true
 ---
 {{- end }}

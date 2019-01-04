@@ -1,10 +1,11 @@
-{{- range $spec := .Values.gateways }}
+{{- range $spec := .Values.global.customGateways }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ $spec.name }}
   namespace: {{ $spec.namespace }}
   annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ $spec.hostPrefix }}.{{ $.Values.dnsDomain }}
     {{- range $key, $val := $spec.serviceAnnotations }}
     {{ $key }}: {{ $val }}
     {{- end }}

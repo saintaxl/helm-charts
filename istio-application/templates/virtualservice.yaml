@@ -36,7 +36,9 @@ spec:
     - "{{ .Values.global.host }}.{{.Values.global.dnsDomain}}"
   gateways:
   {{- if .Values.global.gateway.enabled }}
-    - {{ .Values.global.name }}-gateway
+  {{- range $g := .Values.global.gateway.ingressGateways }}
+    - {{ $g }}-gateway
+  {{- end }}
   {{- end }}
     - mesh
   http:
@@ -51,7 +53,7 @@ spec:
         {{- end }}
     route:
     - destination:
-        host: {{ $.Values.global.host }}
+        host: {{ $.Values.global.name }}.{{ $.Values.global.namespace }}
         subset: {{ $v }}
         port: 
           number: {{ $.Values.global.port }}
@@ -59,7 +61,7 @@ spec:
   - route:
     {{- range $v, $spec := .Values.global.versions }}
     - destination:
-        host: {{ $.Values.global.host }}
+        host: {{ $.Values.global.name }}.{{ $.Values.global.namespace }}
         subset: {{ $v }}
         port:
           number: {{ $.Values.global.port }}
@@ -68,18 +70,20 @@ spec:
 {{- end }}
 ---
 {{- if .Values.global.gateway.enabled }}
+{{- range $g := .Values.global.gateway.ingressGateways }}
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: {{ .Values.global.name }}-gateway
+  name: {{ $g }}-gateway
 spec:
   selector:
-    istio: {{ .Values.global.gateway.ingressGatewayName }}
+    istio: {{ $g }}
   servers:
   - port:
-      number: {{ .Values.global.port }}
+      number: {{ $.Values.global.port }}
       name: http
       protocol: HTTP
     hosts:
-    - "{{.Values.global.host}}.{{.Values.global.dnsDomain}}"
+    - "{{$.Values.global.host}}.{{$.Values.global.dnsDomain}}"
+{{- end }}
 {{- end }}

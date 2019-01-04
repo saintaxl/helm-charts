@@ -1,12 +1,12 @@
-{{- range $spec := .Values.gateways }}
+{{- range $spec := .Values.global.customGateways }}
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
     name: {{ $spec.name }}
     namespace: {{ $spec.namespace }}
 spec:
-    maxReplicas: {{ $spec.autoscale.max }}
-    minReplicas: {{ $spec.autoscale.min }}
+    maxReplicas: 5
+    minReplicas: 2
     scaleTargetRef:
       apiVersion: apps/v1beta1
       kind: Deployment
@@ -15,6 +15,6 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ $spec.autoscale.cpu.targetAverageUtilization }}
+        targetAverageUtilization: 80
 ---
 {{- end }}
