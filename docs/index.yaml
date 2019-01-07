@@ -1,19 +1,19 @@
 apiVersion: v1
 entries:
   istio-application:
-  - created: 2019-01-07T12:24:25.862267Z
-    digest: 9e48bede14a9bb1f53083f6b69465ceb2567a23b01a12bf2e423341c99254efb
+  - created: 2019-01-07T17:11:54.355296Z
+    digest: 2f1276ffe4d90071f5ea6fb13f02138913032b88db0917cf7d7bfb7426538499
     name: istio-application
     urls:
     - istio-application-0.2.0.tgz
     version: 0.2.0
-  - created: 2019-01-07T12:24:25.861959Z
+  - created: 2019-01-07T17:11:54.355026Z
     digest: 45c18b61301721c4b4cd1074e691832d88ad7a334c7536090d6a5cd8b4af1314
     name: istio-application
     urls:
     - istio-application-0.1.1.tgz
     version: 0.1.1
-  - created: 2019-01-07T12:24:25.861681Z
+  - created: 2019-01-07T17:11:54.354759Z
     digest: ea94d7ee8bfe1d24e553e9e6d24959cceacc79325530df47d5ea7c1ce892a5b4
     name: istio-application
     urls:
@@ -22,10 +22,10 @@ entries:
   istio-custom-ingressgateways:
   - apiVersion: v1
     appVersion: 1.0.4
-    created: 2019-01-07T12:24:25.862631Z
+    created: 2019-01-07T17:11:54.355632Z
     description: Helm chart for deploying a custom Istio gateway with AWS certificates.
       Inspired by http://github.com/istio/istio
-    digest: 5ba1faf1d38dcf0795151fb267d6983d2041d25c4a362d7015284f9aad2515b3
+    digest: 7fe06918636e1f9b2d254f6eee1f9697d90ec12ad6deed816f974c7f0c234ecc
     engine: gotpl
     keywords:
     - istio
@@ -39,7 +39,7 @@ entries:
     version: 0.1.0
   kiam:
   - appVersion: "2.7"
-    created: 2019-01-07T12:24:25.863393Z
+    created: 2019-01-07T17:11:54.356402Z
     description: Integrate AWS IAM with Kubernetes
     digest: 2209944f573942c6df05514108f3fe2d895411e33c1183852bab4c1cc1033093
     engine: gotpl
@@ -58,4 +58,4 @@ entries:
     urls:
     - kiam-0.0.1.tgz
     version: 0.0.1
-generated: 2019-01-07T12:24:25.861143Z
+generated: 2019-01-07T17:11:54.354236Z
