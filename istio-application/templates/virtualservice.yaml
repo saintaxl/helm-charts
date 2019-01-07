@@ -33,7 +33,7 @@ metadata:
   name: {{ .Values.global.name }}
 spec:
   hosts:
-    - {{ .Values.global.host }}.{{.Values.global.dnsDomain}}
+    - {{ .Values.global.host }}.{{ .Values.global.dnsDomain }}
   gateways:
   {{- if .Values.global.gateway.enabled }}
   {{- range $ingressGateway := .Values.global.gateway.ingressGateways }}
