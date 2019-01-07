@@ -1,0 +1,22 @@
+global:
+  istioNamespace: istio-system
+  dnsDomain: 
+  tracingServiceHost: 
+
+  customGateways: 
+    # - name: # Name of the ingress gateway
+    #   serviceAnnotations: {} # Custom annotations for the gateway
+    #   labels: {}
+    #   ports: {}
+
+  # A minimal set of requested resources to applied to all deployments so that
+  # Horizontal Pod Autoscaler will be able to function (if set).
+  # Each component can overwrite these default values by adding its own resources
+  # block in the relevant section below and setting the desired resources values.
+  defaultResources:
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi

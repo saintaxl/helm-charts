@@ -1,0 +1,15 @@
+{{- range $customGateway := .Values.global.customGateways }}
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ $customGateway.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $customGateway.name }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $customGateway.name }}-service-account
+    namespace: {{ $.Release.Namespace }}
+---
+{{- end }}

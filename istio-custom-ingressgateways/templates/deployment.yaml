@@ -1,0 +1,89 @@
+{{- range $customGateway := .Values.global.customGateways }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ $customGateway.name }}
+  {{- if $customGateway.labels }}
+  labels:
+    {{- range $key, $val := $customGateway.labels }}
+    {{ $key }}: {{ $val }}
+    {{- end }}
+  {{- end }}
+customGateway:
+  replicas: {{ $customGateway.replicaCount }}
+  template:
+    metadata:
+      {{- if $customGateway.labels }}
+      labels:
+        {{- range $key, $val := $customGateway.labels }}
+        {{ $key }}: {{ $val }}
+        {{- end }}
+      {{- end }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+    customGateway:
+      serviceAccountName: {{ $customGateway.name }}-service-account
+      containers:
+        - name: istio-proxy
+          image: "gcr.io/istio-release/proxyv2:release-1.0-latest-daily"
+          imagePullPolicy: IfNotPresent
+          ports:
+            {{- range $key, $val := required "At least one port is required" $customGateway.ports }}
+            - containerPort: {{ $val.port }}
+            {{- end }}
+          args:
+          - proxy
+          - router
+          - -v
+          - "2"
+          - --discoveryRefreshDelay
+          - '1s' #discoveryRefreshDelay
+          - --drainDuration
+          - '45s' #drainDuration
+          - --parentShutdownDuration
+          - '1m0s' #parentShutdownDuration
+          - --connectTimeout
+          - '10s' #connectTimeout
+          - --serviceCluster
+          - {{ $customGateway.name }}
+          - --zipkinAddress
+          - {{ $.Values.global.tracingServiceHost }}:9411
+          - --proxyAdminPort
+          - "15000"
+          - --controlPlaneAuthPolicy
+          - NONE
+          - --discoveryAddress
+          {{- if $.Values.global.istioNamespace }}
+          - istio-pilot.{{ $.Values.global.istioNamespace }}:8080
+          {{- else }}
+          - istio-pilot:8080
+          {{- end }}
+          resources:
+{{- if $customGateway.resources }}
+{{ toYaml $customGateway.resources | indent 12 }}
+{{- else }}
+{{ toYaml $.Values.global.defaultResources | indent 12 }}
+{{- end }}
+          env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: INSTANCE_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+          - name: ISTIO_META_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+---
+{{- end }}

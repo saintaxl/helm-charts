@@ -9,10 +9,9 @@ spec:
   hosts:
   - {{ $spec.host }}
   ports:
-    - port: 
-        number: {{ $spec.port.number }}
-        name: {{ $spec.port.name }}
-        protocol: {{ $spec.port.protocol }}
+    - number: {{ $spec.port.number }}
+      name: {{ $spec.port.name }}
+      protocol: {{ $spec.port.protocol }}
   resolution: DNS
   location: MESH_EXTERNAL
 {{- if eq $spec.port.protocol "HTTPS" }}
