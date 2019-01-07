@@ -55,7 +55,7 @@ customGateway:
           - NONE
           - --discoveryAddress
           {{- if $.Values.global.istioNamespace }}
-          - istio-pilot.{{ $.Values.istioNamespace }}:8080
+          - istio-pilot.{{ $.Values.global.istioNamespace }}:8080
           {{- else }}
           - istio-pilot:8080
           {{- end }}
