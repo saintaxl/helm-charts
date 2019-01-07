@@ -1,25 +1,25 @@
-{{- range $spec := .Values.global.customGateways }}
+{{- range $customGateway := .Values.global.customGateways }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $spec.name }}
+  name: {{ $customGateway.name }}
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: {{ $spec.hostPrefix }}.{{ $.Values.global.dnsDomain }}
-    {{- range $key, $val := $spec.serviceAnnotations }}
+    external-dns.alpha.kubernetes.io/hostname: {{ $customGateway.hostPrefix }}.{{ $.Values.global.dnsDomain }}
+    {{- range $key, $val := $customGateway.serviceAnnotations }}
     {{ $key }}: {{ $val }}
     {{- end }}
   labels:
-    {{- range $key, $val := $spec.labels }}
+    {{- range $key, $val := $customGateway.labels }}
     {{ $key }}: {{ $val }}
     {{- end }}
-spec:
+customGateway:
   type: LoadBalancer
   selector:
-    {{- range $key, $val := $spec.labels }}
+    {{- range $key, $val := $customGateway.labels }}
     {{ $key }}: {{ $val }}
     {{- end }}
   ports:
-    {{- range $key, $val := $spec.ports }}
+    {{- range $key, $val := $customGateway.ports }}
     -
       {{- range $pkey, $pval := $val }}
       {{ $pkey}}: {{ $pval }}

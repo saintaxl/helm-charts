@@ -1,15 +1,15 @@
-{{- range $spec := .Values.global.customGateways }}
+{{- range $customGateway := .Values.global.customGateways }}
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-    name: {{ $spec.name }}
+    name: {{ $customGateway.name }}
 spec:
     maxReplicas: 5
     minReplicas: 2
     scaleTargetRef:
       apiVersion: apps/v1beta1
       kind: Deployment
-      name: {{ $spec.name }}
+      name: {{ $customGateway.name }}
     metrics:
     - type: Resource
       resource:

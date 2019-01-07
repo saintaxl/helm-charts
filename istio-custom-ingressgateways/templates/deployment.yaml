@@ -1,35 +1,35 @@
-{{- range $spec := .Values.global.customGateways }}
+{{- range $customGateway := .Values.global.customGateways }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ $spec.name }}
-  {{- if $spec.labels }}
+  name: {{ $customGateway.name }}
+  {{- if $customGateway.labels }}
   labels:
-    {{- range $key, $val := $spec.labels }}
+    {{- range $key, $val := $customGateway.labels }}
     {{ $key }}: {{ $val }}
     {{- end }}
   {{- end }}
-spec:
-  replicas: {{ $spec.replicaCount }}
+customGateway:
+  replicas: {{ $customGateway.replicaCount }}
   template:
     metadata:
-      {{- if $spec.labels }}
+      {{- if $customGateway.labels }}
       labels:
-        {{- range $key, $val := $spec.labels }}
+        {{- range $key, $val := $customGateway.labels }}
         {{ $key }}: {{ $val }}
         {{- end }}
       {{- end }}
       annotations:
         sidecar.istio.io/inject: "false"
         scheduler.alpha.kubernetes.io/critical-pod: ""
-    spec:
-      serviceAccountName: {{ $spec.name }}-service-account
+    customGateway:
+      serviceAccountName: {{ $customGateway.name }}-service-account
       containers:
         - name: istio-proxy
           image: "gcr.io/istio-release/proxyv2:release-1.0-latest-daily"
           imagePullPolicy: IfNotPresent
           ports:
-            {{- range $key, $val := required "At least one port is required" $spec.ports }}
+            {{- range $key, $val := required "At least one port is required" $customGateway.ports }}
             - containerPort: {{ $val.port }}
             {{- end }}
           args:
@@ -46,7 +46,7 @@ spec:
           - --connectTimeout
           - '10s' #connectTimeout
           - --serviceCluster
-          - {{ $spec.name }}
+          - {{ $customGateway.name }}
           - --zipkinAddress
           - {{ $.Values.global.tracingServiceHost }}:9411
           - --proxyAdminPort
@@ -60,8 +60,8 @@ spec:
           - istio-pilot:8080
           {{- end }}
           resources:
-{{- if $spec.resources }}
-{{ toYaml $spec.resources | indent 12 }}
+{{- if $customGateway.resources }}
+{{ toYaml $customGateway.resources | indent 12 }}
 {{- else }}
 {{ toYaml $.Values.global.defaultResources | indent 12 }}
 {{- end }}
