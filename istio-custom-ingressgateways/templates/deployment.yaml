@@ -3,19 +3,22 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: {{ $spec.name }}
-  namespace: {{ $.Release.Namespace }}
+  {{- if $spec.labels }}
   labels:
     {{- range $key, $val := $spec.labels }}
     {{ $key }}: {{ $val }}
     {{- end }}
+  {{- end }}
 spec:
   replicas: {{ $spec.replicaCount }}
   template:
     metadata:
+      {{- if $spec.labels }}
       labels:
         {{- range $key, $val := $spec.labels }}
         {{ $key }}: {{ $val }}
         {{- end }}
+      {{- end }}
       annotations:
         sidecar.istio.io/inject: "false"
         scheduler.alpha.kubernetes.io/critical-pod: ""
@@ -26,7 +29,7 @@ spec:
           image: "gcr.io/istio-release/proxyv2:release-1.0-latest-daily"
           imagePullPolicy: IfNotPresent
           ports:
-            {{- range $key, $val := $spec.ports }}
+            {{- range $key, $val := required "At least one port is required" $spec.ports }}
             - containerPort: {{ $val.port }}
             {{- end }}
           args:
@@ -45,7 +48,7 @@ spec:
           - --serviceCluster
           - {{ $spec.name }}
           - --zipkinAddress
-          - {{$.Values.global.tracingServiceHost }}:9411
+          - {{ $.Values.global.tracingServiceHost }}:9411
           - --proxyAdminPort
           - "15000"
           - --controlPlaneAuthPolicy
@@ -60,8 +63,7 @@ spec:
 {{- if $spec.resources }}
 {{ toYaml $spec.resources | indent 12 }}
 {{- else }}
-              requests:
-                cpu: 10m
+{{ toYaml $.Values.global.defaultResources | indent 12 }}
 {{- end }}
           env:
           - name: POD_NAME
