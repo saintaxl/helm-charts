@@ -9,7 +9,7 @@ metadata:
     {{ $key }}: {{ $val }}
     {{- end }}
   {{- end }}
-customGateway:
+spec:
   replicas: {{ $customGateway.replicaCount }}
   template:
     metadata:
@@ -22,7 +22,7 @@ customGateway:
       annotations:
         sidecar.istio.io/inject: "false"
         scheduler.alpha.kubernetes.io/critical-pod: ""
-    customGateway:
+    spec:
       serviceAccountName: {{ $customGateway.name }}-service-account
       containers:
         - name: istio-proxy

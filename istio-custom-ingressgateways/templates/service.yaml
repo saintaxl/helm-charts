@@ -12,7 +12,7 @@ metadata:
     {{- range $key, $val := $customGateway.labels }}
     {{ $key }}: {{ $val }}
     {{- end }}
-customGateway:
+spec:
   type: LoadBalancer
   selector:
     {{- range $key, $val := $customGateway.labels }}
