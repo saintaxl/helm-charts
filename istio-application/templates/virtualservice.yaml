@@ -2,42 +2,42 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.global.name }}
+  name: {{ .Values.global.name | quote }}
   labels:
-    app: {{ .Values.global.name }}
+    app: {{ .Values.global.name | quote }}
 spec:
   ports:
   - port: {{ .Values.global.port }}
     targetPort: {{ .Values.global.targetPort }}
     name: http
   selector:
-    app: {{ .Values.global.name }}
+    app: {{ .Values.global.name | quote }}
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: {{ .Values.global.name }}
+  name: {{ .Values.global.name | quote }}
 spec:
-  host: {{ .Values.global.name }}
+  host: {{ .Values.global.name | quote }}
   subsets:
   {{- range $key, $spec := .Values.global.versions }}
-  - name: {{ $key }}
+  - name: {{ $key | quote }}
     labels:
-      version: {{ $key }}
+      version: {{ $key | quote }}
   {{- end}}
 ---
 {{- if .Values.global.virtualService.enabled }}
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ .Values.global.name }}
+  name: {{ .Values.global.name | quote }}
 spec:
   hosts:
-    - {{ .Values.global.host }}.{{ .Values.global.dnsDomain }}
+    - "{{ .Values.global.host }}.{{ .Values.global.dnsDomain }}"
   gateways:
   {{- if .Values.global.gateway.enabled }}
   {{- range $ingressGateway := .Values.global.gateway.ingressGateways }}
-    - {{ $ingressGateway }}-{{ $.Values.global.name }}-gateway
+    - "{{ $ingressGateway }}-{{ $.Values.global.name }}-gateway"
   {{- end }}
   {{- end }}
     - mesh
@@ -48,21 +48,21 @@ spec:
         {{- range $header, $headerspec := $spec.headers }}
         {{ $header }}: 
         {{- range $matcher, $val := $headerspec }}
-          {{ $matcher }}: {{ $val }}
+          {{ $matcher }}: {{ $val | quote }}
         {{- end }}
         {{- end }}
     route:
     - destination:
-        host: {{ $.Values.global.name }}.{{ $.Release.Namespace }}
-        subset: {{ $v }}
+        host: "{{ $.Values.global.name }}.{{ $.Release.Namespace }}"
+        subset: {{ $v | quote }}
         port: 
           number: {{ $.Values.global.port }}
   {{- end }}
   - route:
     {{- range $v, $spec := .Values.global.versions }}
     - destination:
-        host: {{ $.Values.global.name }}.{{ $.Release.Namespace }}
-        subset: {{ $v }}
+        host: "{{ $.Values.global.name }}.{{ $.Release.Namespace }}"
+        subset: {{ $v | quote }}
         port:
           number: {{ $.Values.global.port }}
       weight: {{ $spec.trafficPercentage }}
@@ -74,10 +74,10 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: {{ $ingressGateway }}-{{ $.Values.global.name }}-gateway
+  name: "{{ $ingressGateway }}-{{ $.Values.global.name }}-gateway"
 spec:
   selector:
-    istio: {{ $ingressGateway }}
+    istio: {{ $ingressGateway | quote }}
   servers:
   - port:
       number: {{ $.Values.global.port }}

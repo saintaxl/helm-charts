@@ -2,11 +2,11 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ $customGateway.name }}
+  name: {{ $customGateway.name | quote }}
   {{- if $customGateway.labels }}
   labels:
     {{- range $key, $val := $customGateway.labels }}
-    {{ $key }}: {{ $val }}
+    {{ $key }}: {{ $val | quote }}
     {{- end }}
   {{- end }}
 spec:
@@ -16,14 +16,14 @@ spec:
       {{- if $customGateway.labels }}
       labels:
         {{- range $key, $val := $customGateway.labels }}
-        {{ $key }}: {{ $val }}
+        {{ $key }}: {{ $val | quote }}
         {{- end }}
       {{- end }}
       annotations:
         sidecar.istio.io/inject: "false"
         scheduler.alpha.kubernetes.io/critical-pod: ""
     spec:
-      serviceAccountName: {{ $customGateway.name }}-service-account
+      serviceAccountName: "{{ $customGateway.name }}-service-account"
       containers:
         - name: istio-proxy
           image: "gcr.io/istio-release/proxyv2:release-1.0-latest-daily"
@@ -46,7 +46,7 @@ spec:
           - --connectTimeout
           - '10s' #connectTimeout
           - --serviceCluster
-          - {{ $customGateway.name }}
+          - {{ $customGateway.name | quote }}
           - --zipkinAddress
           - {{ $.Values.global.tracingServiceHost }}:9411
           - --proxyAdminPort
