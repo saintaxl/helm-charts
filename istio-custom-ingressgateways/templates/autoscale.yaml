@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-    name: {{ $customGateway.name }}
+    name: {{ $customGateway.name | quote }}
 spec:
     maxReplicas: 5
     minReplicas: 2
     scaleTargetRef:
       apiVersion: apps/v1beta1
       kind: Deployment
-      name: {{ $customGateway.name }}
+      name: {{ $customGateway.name | quote }}
     metrics:
     - type: Resource
       resource:

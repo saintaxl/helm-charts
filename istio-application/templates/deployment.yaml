@@ -3,19 +3,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $.Values.global.name }}-{{ $v }}
+  name: "{{ $.Values.global.name }}-{{ $v }}"
   labels:
-    app: {{ $.Values.global.name }}
-    version: {{ $v }}
+    app: {{ $.Values.global.name | quote }}
+    version: {{ $v | quote }}
 spec:
   selector:
     matchLabels:
-      app: {{ $.Values.global.name }}
-      version: {{ $v }}
+      app: {{ $.Values.global.name | quote }}
+      version: {{ $v | quote }}
   template:
     metadata:
       labels:
-        app: {{ $.Values.global.name }}
+        app: {{ $.Values.global.name | quote }}
         version: {{ $v }}
       {{- if $spec.podAnnotations }}
       annotations:
@@ -23,8 +23,8 @@ spec:
       {{- end }}
     spec:
       containers:
-        - name: {{ $.Values.global.name }}
-          image: {{ $spec.image.repository }}:{{ $spec.image.tag }}
+        - name: {{ $.Values.global.name | quote }}
+          image: "{{ $spec.image.repository }}:{{ $spec.image.tag }}"
           {{- if $spec.args }}
           args:
 {{ toYaml $spec.args | indent 12 }}
@@ -47,9 +47,5 @@ spec:
 {{ toYaml $spec.env | indent 12 -}}
           {{- end }}
             - name: JAEGER_AGENT_HOST
-              value: "{{ $.Values.global.tracingServiceHost }}"
-            - name: JAEGER_SAMPLER_TYPE
-              value: "const"
-            - name: JAEGER_SAMPLER_PARAM
-              value: "1"        
+              value: {{ $.Values.global.tracingServiceHost | quote }}
 {{- end }}
