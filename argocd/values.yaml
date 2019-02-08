@@ -1,0 +1,95 @@
+
+image:
+  tag: v0.11.1
+
+server:
+  service:
+    type:
+    annotations: {}
+
+  # resources:
+  #   requests:
+  #     cpu: 200m
+  #     memory: 3000Mi
+  #   limits:
+  #     cpu: 200m
+  #     memory: 3000Mi
+  resources: {}
+
+repoServer:
+  replicas: 1
+
+  # resources:
+  #   requests:
+  #     cpu: 100m
+  #     memory: 250Mi
+  #   limits:
+  #     cpu: 500m
+  #     memory: 250Mi
+  resources: {}
+
+applicationController:
+  replicas: 1
+  
+  # resources:
+  #   requests:
+  #     cpu: 100m
+  #     memory: 1000Mi
+  #   limits:
+  #     cpu: 500m
+  #     memory: 1000Mi
+  resources: {}
+
+namespace: 
+  create: false
+  labels: {}
+
+config:
+  secret:
+    create: false
+    admin:
+      password:
+      passwordMtime:
+
+  rbacPolicy:
+    file:
+    # default: role:admin
+    default:
+
+  sso:
+    enabled: false
+
+    # Argo CD's externally facing base URL. Required for configuring SSO
+    url:
+
+    # A dex connector configuration. See documentation on how to configure SSO:
+    # https://github.com/argoproj/argo-cd/blob/master/docs/sso.md#2-configure-argocd-for-sso
+    dexConfig: {}
+    #   connectors:
+    #     - type: github
+    #       id: github
+    #       name: GitHub
+    #       config:
+    #         clientID: aabbccddeeff00112233
+    #         clientSecret: aaaaahhhhhheeeee55555544444ooooooo
+
+    # To configure Argo CD to delegate authenticate to your OIDC provider
+    # https://github.com/argoproj/argo-cd/blob/master/docs/sso.md#existing-oidc-provider
+    oidcConfig: {}
+      # name: Okta
+      # issuer: https://dev-123456.oktapreview.com
+      # clientID: aabbccddeeff00112233
+      # clientSecret:  aaaaahhhhhheeeee55555544444ooooooo
+
+
+  # https://github.com/argoproj/argo-cd/blob/master/docs/declarative-setup.md#repositories  
+  github: 
+    repositories: []
+    # - url: git@github.com:saksdirect/hbc-common-k8s.git
+    #   sshPrivateKeySecretName: github-hbc-common-k8s
+
+  # https://github.com/argoproj/argo-cd/blob/master/docs/declarative-setup.md#helm-chart-repositories
+  helm:
+    repositories: []
+    # - url: "https://saksdirect.github.io/helm-charts"
+    #   name: "hbc-helm-charts"

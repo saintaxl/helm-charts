@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-server
+spec:
+  selector:
+    matchLabels:
+      app: argocd-server
+  template:
+    metadata:
+      labels:
+        app: argocd-server
+    spec:
+      serviceAccountName: argocd-server
+      initContainers:
+      - name: ui
+        image: argoproj/argocd-ui:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        command: [cp, -r, /app, /shared]
+        volumeMounts:
+        - mountPath: /shared
+          name: static-files
+      containers:
+      - name: argocd-server
+        image: argoproj/argocd:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        command: [argocd-server, --staticassets, /shared/app]
+        volumeMounts:
+        - mountPath: /shared
+          name: static-files
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 30
+        {{- if .Values.server.resources  }}  
+        resources:
+{{ toYaml .Values.server.resources | indent 10 }}
+        {{- end }}
+      volumes:
+      - emptyDir: {}
+        name: static-files

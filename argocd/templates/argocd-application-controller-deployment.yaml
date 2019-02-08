@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-application-controller
+spec:
+  replicas: {{ .Values.applicationController.replicas }}
+  selector:
+    matchLabels:
+      app: argocd-application-controller
+  template:
+    metadata:
+      labels:
+        app: argocd-application-controller
+    spec:
+      containers:
+      - command:
+        - argocd-application-controller
+        - --status-processors
+        - "20"
+        - --operation-processors
+        - "10"
+        image: argoproj/argocd:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        name: argocd-application-controller
+        ports:
+        - containerPort: 8083
+        readinessProbe:
+          tcpSocket:
+            port: 8083
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        {{- if .Values.applicationController.resources  }}  
+        resources:
+{{ toYaml .Values.applicationController.resources | indent 10 }}
+        {{- end }}
+      serviceAccountName: argocd-application-controller
+
+
