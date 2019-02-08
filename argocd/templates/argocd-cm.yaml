@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+data:
+{{- if .Values.config.sso.enabled }}
+  url: {{ tpl .Values.config.sso.url . }}
+  
+  {{- if .Values.config.sso.dexConfig }}
+  dex.config: |
+{{ toYaml .Values.config.sso.dexConfig | indent 4 }}
+  {{- end }}
+
+  {{- if .Values.config.sso.oidcConfig }}
+  oidc.config: |
+{{ toYaml .Values.config.sso.oidcConfig | indent 4 }}
+  {{- end }}
+{{- end }}
+
+  {{- if .Values.config.github.repositories }}
+  repositories: |
+    {{- range .Values.config.github.repositories }}
+    - url: {{ .url }}
+      sshPrivateKeySecret: 
+        name: {{ .sshPrivateKeySecretName }}
+        key: sshPrivateKey
+    {{- end }}
+  {{- end }}
+
+  {{- if .Values.config.helm.repositories }}
+  helm.repositories: |
+    {{- range .Values.config.helm.repositories }}
+    - url: {{ .url }}
+      name: {{ .name }}
+    {{- end }}
+  {{- end }}

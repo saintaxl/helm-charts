@@ -1,0 +1,16 @@
+{{- if .Values.config.sso.dexConfig }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dex-server
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+{{- end }}

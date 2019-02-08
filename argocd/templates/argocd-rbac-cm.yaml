@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+data:
+{{- if .Values.config.rbacPolicy.csv }}
+  # An RBAC policy .csv file containing additional policy and role definitions.
+  # See https://github.com/argoproj/argo-cd/blob/master/docs/rbac.md on how to write RBAC policies.
+  policy.csv: |
+{{ .Values.config.rbacPolicy.csv | indent 4 }}
+{{- end }}
+
+  # The default role ArgoCD will fall back to, when authorizing API requests
+  policy.default: {{ default "role:readonly" .Values.config.rbacPolicy.default }}
