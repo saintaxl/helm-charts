@@ -52,7 +52,7 @@ config:
       passwordMtime:
 
   rbacPolicy:
-    file:
+    csv:
     # default: role:admin
     default:
 
