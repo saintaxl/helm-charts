@@ -17,8 +17,8 @@ To add a chart to the repository server:
 
 ### How to update a chart
 
-1. Modify the file(s) in the selected chart
-2. Run `./update-chart.sh` supplying the chart and the new version.  To obtain the current version, check the `docs` folder.
-   For example `./update-chart.sh argocd 0.3.0`
-3. Add the new `.tgz` file generated in the docs folder.
-4. Commit, push and open a PR with the new chart, the updated index and the `.tgz` package. 
+1. Modify the file(s) in the selected chart.
+2. Bump the version in the relevant `Chart.yaml` file.  For example if updating argocd, change the version in `argocd/Chart.yaml`.
+3. Run `./add-chart.sh`, supplying the name of the chart. For example `./add-chart.sh argocd`.
+4. Add the new `.tgz` file generated in the docs folder to git.
+5. Commit, push and open a PR with the new chart, the updated index and the `.tgz` package. 
