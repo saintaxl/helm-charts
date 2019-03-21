@@ -21,3 +21,7 @@ spec:
   selector:
     app: argocd-server
   type: {{ default "ClusterIP" .Values.server.service.type }}
+{{- if .Values.server.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml .Values.server.service.loadBalancerSourceRanges | trim | indent 4 }}
+{{- end }}
